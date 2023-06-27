@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+
+<!-- https://github.com/DanielSvoboda/POST_Request_Sender -->
+
+<html>
+  <head>
+    <title>POST Request Sender</title>
+    <style>
+      input[id="url"]
+	  {
+        width: 760px;
+      }	  
+
+      input[id^="valor"]
+	  {
+        width: 600px;
+      }
+    </style>
+  </head>
+    
+  <body>
+
+
+<div style="display: flex; justify-content: center; margin-top: 20px;">
+         <form id="meuForm" action="" method="POST">
+		  <label for="url">URL:</label>
+		  <input type="text" id="url" name="url">
+
+		  <input type="submit" value="Submit"><br><br>
+		  
+		  <label for="chave1">Key:</label>
+		  <input type="text" id="chave1" name="chave1">
+		  <label for="valor1">Value:</label>
+		  <input type="text" id="valor1" name="valor1"><br>
+		  
+		  <label for="chave2">Key:</label>
+		  <input type="text" id="chave2" name="chave2"">
+		  <label for="valor2">Value:</label>
+		  <input type="text" id="valor2" name="valor2"><br>
+		  
+		  <label for="chave3">Key:</label>
+		  <input type="text" id="chave3" name="chave3">
+		  <label for="valor3">Value:</label>
+		  <input type="text" id="valor3" name="valor3"><br>
+
+		  <label for="chave4">Key:</label>
+		  <input type="text" id="chave4" name="chave4">
+		  <label for="valor4">Value:</label>
+		  <input type="text" id="valor4" name="valor4"><br>
+
+		  <label for="chave5">Key:</label>
+		  <input type="text" id="chave5" name="chave5">
+		  <label for="valor5">Value:</label>
+		  <input type="text" id="valor5" name="valor5"><br>
+
+		  <label for="chave6">Key:</label>
+		  <input type="text" id="chave6" name="chave6">
+		  <label for="valor6">Value:</label>
+		  <input type="text" id="valor6" name="valor6"><br>
+
+		  <label for="chave7">Key:</label>
+		  <input type="text" id="chave7" name="chave7">
+		  <label for="valor7">Value:</label>
+		  <input type="text" id="valor7" name="valor7"><br>
+
+		  <label for="chave8">Key:</label>
+		  <input type="text" id="chave8" name="chave8">
+		  <label for="valor8">Value:</label>
+		  <input type="text" id="valor8" name="valor8"><br>
+
+		  <label for="chave9">Key:</label>
+		  <input type="text" id="chave9" name="chave9">
+		  <label for="valor9">Value:</label>
+		  <input type="text" id="valor9" name="valor9"><br>
+
+		  <label for="chave10">Key:</label>
+		  <input type="text" id="chave10" name="chave10">
+		  <label for="valor10">Value:</label>
+		  <input type="text" id="valor10" name="valor10">
+             <button id="clear" type="button">Clear History</button>
+         </form>
+    </div>
+
+    <hr>
+
+
+<div style="display: flex; justify-content: center; margin-top: 20px;">
+  <pre id="response" style="border: 1px solid black; padding: 10px;">
+  </pre>
+</div>
+
+
+
+<script>
+  document.getElementById('clear').addEventListener('click', function(event) {
+    event.preventDefault();
+    document.getElementById('response').textContent = '';
+  });
+</script>
+
+
+
+<script>
+  let firstResponse = true;
+  // Add an event listener to the form with id 'meuForm' that listens for a submit event
+  document.getElementById('meuForm').addEventListener('submit', function(event) {
+    // Prevent the default form submission behavior
+    event.preventDefault();
+    // Create a FormData object from the form data
+    const formData = new FormData(this);
+    // Get the value of the 'url' field from the form data
+    const url = formData.get('url');
+    // Delete the 'url' field from the form data
+    formData.delete('url');
+    // Create a new URLSearchParams object to store the request parameters
+    const params = new URLSearchParams();
+    // Loop through the form data and add up to 10 key/value pairs as request parameters
+    for (let i = 1; i <= 10; i++) {
+      const chave = formData.get(`chave${i}`);
+      const valor = formData.get(`valor${i}`);
+      if (chave && valor) {
+        params.append(chave, valor);
+      }
+    }
+    // Create a new XMLHttpRequest object to send the POST request
+    const xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = function() {
+      // When the readyState of the XMLHttpRequest object is 4 (request completed)
+      if (this.readyState == 4) {
+        // Get the element with id 'response' to display the response
+        const responseElement = document.getElementById('response');
+        // Create a new div element to hold the response information
+        const newResponse = document.createElement('div');
+        // Create a span element to display the request status
+        const statusElement = document.createElement('span');
+        statusElement.textContent = `Status: ${this.status}`;
+        // If the request was successful (status code between 200 and 299), set the text color to green, otherwise set it to red
+        if (this.status >= 200 && this.status < 300) {
+          statusElement.style.color = 'green';
+        } else {
+          statusElement.style.color = 'red';
+        }
+
+        // Create a span element to display the request URL
+        const urlElement = document.createElement('span');
+        urlElement.textContent = `URL: ${url}`;
+        newResponse.appendChild(urlElement);
+
+        // Create a details element to display the request parameters in a collapsible list
+        const details = document.createElement('details');
+        const summary = document.createElement('summary');
+        summary.textContent = 'Request parameters';
+        details.appendChild(summary);
+        const paramsList = document.createElement('ul');
+        for (let i = 1; i <= 10; i++) {
+          const chave = formData.get(`chave${i}`);
+          const valor = formData.get(`valor${i}`);
+          if (chave && valor) {
+            params.append(chave, valor);
+            const li = document.createElement('li');
+            li.textContent = `${chave}: ${valor}`;
+            paramsList.appendChild(li);
+          }
+        }
+        details.appendChild(paramsList);
+        newResponse.appendChild(details);
+
+        // Add a line break between elements
+        newResponse.appendChild(document.createElement('br'));
+
+        // Append the status element to the response div
+        newResponse.appendChild(statusElement);
+
+        // Create a span element to display the current date and time
+        const dateElement = document.createElement('span');
+        dateElement.textContent = `	${new Date().toLocaleString()}`;
+        newResponse.appendChild(dateElement);
+        
+	// Add line breaks between elements
+	newResponse.appendChild(document.createElement('br'));
+	newResponse.appendChild(document.createElement('br'));
+
+	// Get the response text from the XMLHttpRequest object
+	const responseText = this.responseText;
+	try {
+	  // Try to parse the response text as JSON
+	  const responseJson = JSON.parse(responseText);
+	  // Format the JSON response as a string with indentation and line breaks
+	  const formattedResponse = JSON.stringify(responseJson, null, 2);
+	  // Append the formatted JSON response as text to the response div
+	  newResponse.appendChild(document.createTextNode(formattedResponse));
+	} catch (e) {
+	  // If parsing as JSON fails, append the response text as plain text to the response div
+	  newResponse.appendChild(document.createTextNode(responseText));
+	}
+	// Insert the new response div at the beginning of the response element
+	responseElement.insertBefore(newResponse, responseElement.firstChild);
+
+	// If this is not the first response, add a horizontal rule between responses
+	if (!firstResponse) {
+	  newResponse.appendChild(document.createElement('hr'));
+	}
+	firstResponse = false;
+      }
+    };
+
+    // Open a POST request to the specified URL with the specified request parameters
+    xhr.open('POST', url);
+    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+    xhr.send(params.toString());
+  });
+</script>
+
+
+  </body>
+</html>
+
